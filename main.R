@@ -53,7 +53,21 @@ citacoes_ano %>% arrange(desc(total_citacoes))
 
 write.csv(citacoes_ano, "resultados/total_citacoes.csv", row.names = FALSE)
 
----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Mostrar:
+# Como o impacto médio dos artigos evoluiu ao longo do tempo
+# Se os artigos mais recentes estão sendo mais citados
+# Se existe concentração de citações (alta variabilidade)
+
+# Mas tem um problema estrutural:
+# Artigos recentes (2024, 2025) ainda não tiveram tempo para acumular citações.
+
+# Então:
+# A média de citações por ano tende a cair nos anos mais recentes
+# Não porque os artigos são piores
+# Mas porque são mais novos
+# Isso distorce análise temporal.
+
 # Média e desvio padrão de citação por ano ***
 estatisticas_citacao <- df %>%
   group_by(year) %>%
@@ -70,7 +84,15 @@ importancia_citacao <- df %>%
   summarise(n = n())
 
 write.csv(importancia_citacao, "resultados/importancia_citacao.csv", row.names = FALSE)
----------------------------------------------------------------------------
+
+importancia_citacao2 <- df %>%
+  group_by(fascia) %>%
+  summarise(n = n()) %>%
+  mutate(percentual = (n / sum(n)) * 100)
+
+write.csv(importancia_citacao2, "resultados/importancia_citacao2.csv", row.names = FALSE)
+
+# ---------------------------------------------------------------------------
 
 # 3) Média e desvio padrão do score por ano
 estatisticas_score <- df %>%
