@@ -36,6 +36,47 @@ artigos_ano %>% arrange(desc(n_artigos))
 
 write.csv(artigos_ano, "resultados/artigos_por_ano.csv", row.names = FALSE)
 
+# ggplot(artigos_ano, aes(x = year, y = n_artigos)) +
+#   geom_line() +
+#   geom_point() +
+#   labs(title = "Número de Artigos por Ano",
+#        x = "Ano",
+#        y = "Quantidade de Artigos") +
+#   theme_minimal()
+
+
+# ggplot(artigos_ano, aes(x = as.integer(year), y = n_artigos)) +
+#   geom_line(linewidth = 1) +
+#   geom_point(size = 2) +
+#   scale_x_continuous(breaks = seq(min(artigos_ano$year),
+#                                   max(artigos_ano$year), 
+#                                   by = 2)) +
+#   labs(title = "Evolução do Número de Artigos por Ano",
+#        x = "Ano de Publicação",
+#        y = "Quantidade de Artigos") +
+#   theme_minimal() +
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplot(artigos_ano, aes(x = year, y = n_artigos)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  geom_point(data = subset(artigos_ano, year == 2025),
+             color = "red", size = 4) +
+  geom_text_repel(data = subset(artigos_ano, year == 2025),
+                  aes(label = n_artigos),
+                  nudge_y = 30) +
+  scale_x_continuous(breaks = artigos_ano$year) +
+  labs(title = "Evolução do Número de Artigos por Ano",
+       x = "Ano de Publicação",
+       y = "Quantidade de Artigos") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave(
+  file.path("resultados/artigo_ano_grafico.jpg"),
+  width = 10, height = 6
+)
+
 # 2) Soma de citações por ano
 # Verificar se possui citações em branco
 citacoes_sem_dados <- df %>%
@@ -94,6 +135,20 @@ write.csv(importancia_citacao2, "resultados/importancia_citacao2.csv", row.names
 
 # ---------------------------------------------------------------------------
 
+ggplot(citacoes_ano, aes(x = year, y = total_citacoes)) +
+  geom_line(size = 1, color = "darkred") +
+  geom_point(size = 2, color = "darkred") +
+  labs(title = "Total de Citações por Ano",
+       x = "Ano",
+       y = "Número de Citações") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave(
+  file.path("resultados/citacoes_ano_grafico.jpg"),
+  width = 10, height = 6
+)
+
 # 3) Média e desvio padrão do score por ano
 estatisticas_score <- df %>%
   group_by(year) %>%
@@ -104,66 +159,6 @@ estatisticas_score <- df %>%
 
 write.csv(estatisticas_score, "resultados/estatisticas_score.csv", row.names = FALSE)
 
-# 4) Número de artigos por base
-artigos_base <- df %>%
-  group_by(source_database) %>%
-  summarise(n_artigos = n())
-
-write.csv(artigos_base, "resultados/n_artigos_base.csv", row.names = FALSE)
-
-# 5) Frequência por nível de importância
-importancia <- df %>%
-  group_by(fascia) %>%
-  summarise(n = n())
-
-write.csv(importancia, "resultados/importancia.csv", row.names = FALSE)
-
-# ggplot(artigos_ano, aes(x = year, y = n_artigos)) +
-#   geom_line() +
-#   geom_point() +
-#   labs(title = "Número de Artigos por Ano",
-#        x = "Ano",
-#        y = "Quantidade de Artigos") +
-#   theme_minimal()
-
-
-# ggplot(artigos_ano, aes(x = as.integer(year), y = n_artigos)) +
-#   geom_line(linewidth = 1) +
-#   geom_point(size = 2) +
-#   scale_x_continuous(breaks = seq(min(artigos_ano$year),
-#                                   max(artigos_ano$year), 
-#                                   by = 2)) +
-#   labs(title = "Evolução do Número de Artigos por Ano",
-#        x = "Ano de Publicação",
-#        y = "Quantidade de Artigos") +
-#   theme_minimal() +
-#   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-ggplot(artigos_ano, aes(x = year, y = n_artigos)) +
-  geom_line(size = 1.2) +
-  geom_point(size = 2) +
-  geom_point(data = subset(artigos_ano, year == 2025),
-             color = "red", size = 4) +
-  geom_text_repel(data = subset(artigos_ano, year == 2025),
-                  aes(label = n_artigos),
-                  nudge_y = 30) +
-  scale_x_continuous(breaks = artigos_ano$year) +
-  labs(title = "Evolução do Número de Artigos por Ano",
-       x = "Ano de Publicação",
-       y = "Quantidade de Artigos") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-
-ggplot(citacoes_ano, aes(x = year, y = total_citacoes)) +
-  geom_line(size = 1, color = "darkred") +
-  geom_point(size = 2, color = "darkred") +
-  labs(title = "Total de Citações por Ano",
-       x = "Ano",
-       y = "Número de Citações") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
 ggplot(estatisticas_score, aes(x = year, y = media_score)) +
   geom_line(size = 1, color = "blue") +
   geom_point(size = 2, color = "blue") +
@@ -173,6 +168,10 @@ ggplot(estatisticas_score, aes(x = year, y = media_score)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+ggsave(
+  file.path("resultados/estatisticas_score_media_grafico.jpg"),
+  width = 10, height = 6
+)
 
 ggplot(estatisticas_score, aes(x = year, y = desvio_padrao)) +
   geom_line(size = 1, color = "purple") +
@@ -183,6 +182,17 @@ ggplot(estatisticas_score, aes(x = year, y = desvio_padrao)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+ggsave(
+  file.path("resultados/estatisticas_score_desvio_padrao_grafico.jpg"),
+  width = 10, height = 6
+)
+
+# 4) Número de artigos por base
+artigos_base <- df %>%
+  group_by(source_database) %>%
+  summarise(n_artigos = n())
+
+write.csv(artigos_base, "resultados/n_artigos_base.csv", row.names = FALSE)
 
 ggplot(artigos_base, aes(x = reorder(source_database, n_artigos), y = n_artigos)) +
   geom_col(fill = "steelblue") +
@@ -191,4 +201,19 @@ ggplot(artigos_base, aes(x = reorder(source_database, n_artigos), y = n_artigos)
        x = "Base",
        y = "Quantidade de Artigos") +
   theme_minimal()
+
+ggsave(
+  file.path("resultados/n_artigos_base_grafico.jpg"),
+  width = 10, height = 6
+)
+
+# 5) Frequência por nível de importância
+importancia <- df %>%
+  group_by(fascia) %>%
+  summarise(n = n())
+
+write.csv(importancia, "resultados/importancia.csv", row.names = FALSE)
+
+
+
 
