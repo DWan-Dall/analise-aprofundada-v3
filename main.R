@@ -36,26 +36,33 @@ artigos_ano %>% arrange(desc(n_artigos))
 
 write.csv(artigos_ano, "resultados/artigos_por_ano.csv", row.names = FALSE)
 
-# ggplot(artigos_ano, aes(x = year, y = n_artigos)) +
-#   geom_line() +
-#   geom_point() +
-#   labs(title = "Número de Artigos por Ano",
-#        x = "Ano",
-#        y = "Quantidade de Artigos") +
-#   theme_minimal()
+ggplot(artigos_ano, aes(x = factor(year), y = n_artigos)) +
+  geom_col(fill = "steelblue") +
+  geom_text(aes(label = n_artigos),
+            vjust = -0.5,
+            size = 3.5) +
+  labs(title = "Número de Artigos por Ano",
+       x = "Ano de Publicação",
+       y = "Quantidade de Artigos") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+ggsave(
+  file.path("resultados/artigos_por_ano_barras.jpg"),
+  width = 12, height = 6
+)
 
-# ggplot(artigos_ano, aes(x = as.integer(year), y = n_artigos)) +
-#   geom_line(linewidth = 1) +
-#   geom_point(size = 2) +
-#   scale_x_continuous(breaks = seq(min(artigos_ano$year),
-#                                   max(artigos_ano$year), 
-#                                   by = 2)) +
-#   labs(title = "Evolução do Número de Artigos por Ano",
-#        x = "Ano de Publicação",
-#        y = "Quantidade de Artigos") +
-#   theme_minimal() +
-#   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggplot(artigos_ano, aes(x = factor(year), y = n_artigos)) +
+  geom_col(aes(fill = year == ano_max), show.legend = FALSE) +
+  scale_fill_manual(values = c("steelblue", "red")) +
+  geom_text(aes(label = n_artigos),
+            vjust = -0.5,
+            size = 3.5) +
+  labs(title = "Número de Artigos por Ano (Destaque para Maior Produção)",
+       x = "Ano de Publicação",
+       y = "Quantidade de Artigos") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ggplot(artigos_ano, aes(x = year, y = n_artigos)) +
   geom_line(size = 1.2) +
@@ -66,16 +73,20 @@ ggplot(artigos_ano, aes(x = year, y = n_artigos)) +
                   aes(label = n_artigos),
                   nudge_y = 30) +
   scale_x_continuous(breaks = artigos_ano$year) +
-  labs(title = "Evolução do Número de Artigos por Ano",
+  labs(title = "Destaque do Ano de Maior Produção (2025)",
        x = "Ano de Publicação",
        y = "Quantidade de Artigos") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ggsave(
-  file.path("resultados/artigo_ano_grafico.jpg"),
+  file.path("resultados/artigos_por_ano_destaque.jpg"),
   width = 10, height = 6
 )
+
+ano_max <- artigos_ano %>%
+  filter(n_artigos == max(n_artigos)) %>%
+  pull(year)
 
 # 2) Soma de citações por ano
 # Verificar se possui citações em branco
