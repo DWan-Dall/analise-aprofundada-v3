@@ -13,6 +13,10 @@ df <- read_excel("dados/DB_Cientometria_Expandida_ver01.xlsx")
 # Criar pasta 'resultados' para salvar saídas, se não existir
 if (!dir.exists("resultados")) {
   dir.create("resultados")
+  dir.create("resultados/etapa-01")
+  dir.create("resultados/etapa-02")
+  dir.create("resultados/etapa-03")
+  dir.create("resultados/etapa-04")
 }
 
 # 1) Número de artigos por ano
@@ -23,7 +27,7 @@ artigos_sem_ano <- df %>%
 
 artigos_sem_ano
 
-write.csv(artigos_sem_ano, "resultados/artigos_sem_ano.csv", row.names = FALSE)
+write.csv(artigos_sem_ano, "resultados/etapa-01/artigos_sem_ano.csv", row.names = FALSE)
 
 # Remover anos NA
 df <- df %>% filter(!is.na(year))
@@ -35,7 +39,7 @@ artigos_ano <- df %>%
 
 artigos_ano %>% arrange(desc(n_artigos))
 
-write.csv(artigos_ano, "resultados/artigos_por_ano.csv", row.names = FALSE)
+write.csv(artigos_ano, "resultados/etapa-01/artigos_por_ano.csv", row.names = FALSE)
 
 ggplot(artigos_ano, aes(x = factor(year), y = n_artigos)) +
   geom_col(fill = "steelblue") +
@@ -49,7 +53,7 @@ ggplot(artigos_ano, aes(x = factor(year), y = n_artigos)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ggsave(
-  file.path("resultados/artigos_por_ano_barras.jpg"),
+  file.path("resultados/etapa-01/artigos_por_ano_barras.jpg"),
   width = 12, height = 6
 )
 
@@ -70,8 +74,8 @@ ggplot(artigos_ano, aes(x = factor(year), y = n_artigos)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ggsave(
-  file.path("resultados/artigos_por_ano_barras_destaque.jpg"),
-  width = 10, height = 6
+  file.path("resultados/etapa-01/artigos_por_ano_barras_destaque.jpg"),
+  width = 12, height = 6
 )
 
 ggplot(artigos_ano, aes(x = year, y = n_artigos)) +
@@ -90,10 +94,9 @@ ggplot(artigos_ano, aes(x = year, y = n_artigos)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ggsave(
-  file.path("resultados/artigos_por_ano_destaque.jpg"),
-  width = 10, height = 6
+  file.path("resultados/etapa-01/artigos_por_ano_destaque.jpg"),
+  width = 12, height = 6
 )
-
 
 # 2) Soma de citações por ano
 # Verificar se possui citações em branco
@@ -110,7 +113,7 @@ citacoes_ano <- df %>%
 
 citacoes_ano %>% arrange(desc(total_citacoes))
 
-write.csv(citacoes_ano, "resultados/total_citacoes.csv", row.names = FALSE)
+write.csv(citacoes_ano, "resultados/etapa-02/total_citacoes.csv", row.names = FALSE)
 
 ggplot(citacoes_ano, aes(x = factor(year), y = total_citacoes)) +
   geom_col(fill = "darkred") +
@@ -124,7 +127,7 @@ ggplot(citacoes_ano, aes(x = factor(year), y = total_citacoes)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ggsave(
-  file.path("resultados/citacoes_por_ano_barras.jpg"),
+  file.path("resultados/etapa-02/citacoes_por_ano_barras.jpg"),
   width = 12, height = 6
 )
 
@@ -145,9 +148,24 @@ ggplot(citacoes_ano, aes(x = factor(year), y = total_citacoes)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ggsave(
-  file.path("resultados/citacoes_por_ano_barras_destaque_global.jpg"),
+  file.path("resultados/etapa-02/citacoes_por_ano_barras_destaque_global.jpg"),
   width = 12, height = 6
 )
+
+ggplot(citacoes_ano, aes(x = year, y = total_citacoes)) +
+  geom_line(size = 1, color = "darkred") +
+  geom_point(size = 2, color = "darkred") +
+  labs(title = "Total de Citações por Ano",
+       x = "Ano",
+       y = "Número de Citações") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave(
+  file.path("resultados/etapa-02/citacoes_ano_grafico_global.jpg"),
+  width = 12, height = 6
+)
+
 
 # ---------------------------------------------------------------------------
 # Mostrar:
@@ -164,6 +182,8 @@ ggsave(
 # Mas porque são mais novos
 # Isso distorce análise temporal.
 
+# ---------------------------------------------------------------------------
+
 # Média e desvio padrão de citação por ano ***
 estatisticas_citacao <- df %>%
   group_by(year) %>%
@@ -174,9 +194,7 @@ estatisticas_citacao <- df %>%
 
 estatisticas_citacao 
 
-write.csv(estatisticas_citacao, "resultados/estatisticas_citacao_global.csv", row.names = FALSE)
-
-
+write.csv(estatisticas_citacao, "resultados/etapa-02/estatisticas_citacao_global.csv", row.names = FALSE)
 
 # Frequência por nível de importância por citação ***
 importancia_citacao <- df %>%
@@ -185,7 +203,7 @@ importancia_citacao <- df %>%
 
 importancia_citacao
 
-write.csv(importancia_citacao, "resultados/importancia_citacao_global.csv", row.names = FALSE)
+write.csv(importancia_citacao, "resultados/etapa-02/importancia_citacao_global.csv", row.names = FALSE)
 
 importancia_citacao2 <- df %>%
   group_by(fascia) %>%
@@ -194,25 +212,36 @@ importancia_citacao2 <- df %>%
 
 importancia_citacao2
 
-write.csv(importancia_citacao2, "resultados/importancia_citacao2_global.csv", row.names = FALSE)
+write.csv(importancia_citacao2, "resultados/etapa-02/importancia_citacao2_global.csv", row.names = FALSE)
 
-# ---------------------------------------------------------------------------
+# Média de citações POR FASCIA
 
-ggplot(citacoes_ano, aes(x = year, y = total_citacoes)) +
-  geom_line(size = 1, color = "darkred") +
-  geom_point(size = 2, color = "darkred") +
-  labs(title = "Total de Citações por Ano",
-       x = "Ano",
-       y = "Número de Citações") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+estatisticas_fascia <- df %>%
+  group_by(fascia) %>%
+  summarise(
+    total_artigos = n(),
+    media_citacoes = mean(citations, na.rm = TRUE),
+    desvio_padrao = sd(citations, na.rm = TRUE)
+  ) %>%
+  arrange(desc(media_citacoes))
 
-ggsave(
-  file.path("resultados/citacoes_ano_grafico_global.jpg"),
-  width = 12, height = 6
-)
+estatisticas_fascia
+
+# group_by(fascia) %>%
+# mutate(percentual = n / sum(n))
 
 # ---------------
+# Média de citações por artigo por ano
+media_por_ano <- df %>%
+  group_by(year) %>%
+  summarise(
+    total_artigos = n(),
+    total_citacoes = sum(citations, na.rm = TRUE),
+    media_citacoes = mean(citations, na.rm = TRUE)
+  )
+
+media_por_ano
+
 # 2.1) Citações por ano_max
 
 estatisticas_globais <- df %>%
@@ -225,7 +254,7 @@ estatisticas_globais <- df %>%
 estatisticas_globais
 
 write.csv(estatisticas_globais,
-          "resultados/estatisticas_globais_citacoes.csv",
+          "resultados/etapa-02/estatisticas_globais_citacoes.csv",
           row.names = FALSE)
 
 
@@ -246,7 +275,7 @@ estatisticas_ano_max <- df %>%
 estatisticas_ano_max
 
 write.csv(estatisticas_ano_max,
-          "resultados/estatisticas_citacoes_ano_max.csv",
+          "resultados/etapa-02/estatisticas_citacoes_ano_max.csv",
           row.names = FALSE)
 
 # ---------------
@@ -272,7 +301,7 @@ ggplot(comparacao, aes(x = grupo, y = media_citacoes)) +
        y = "Média de Citações") +
   theme_minimal()
 
-ggsave("resultados/comparacao_media_citacoes.jpg",
+ggsave("resultados/etapa-02/comparacao_media_citacoes.jpg",
        width = 12, height = 6)
 
 
@@ -292,20 +321,131 @@ ggplot(estatisticas_long, aes(x = metrica, y = valor)) +
        x = "",
        y = "Valor") +
   theme_minimal()
+# --------------------
+top_artigos <- df %>%
+  arrange(desc(citations)) %>%
+  select(title, year, citations, source_database, fascia) %>%
+  head(20)
+
+top_artigos
+
+write.csv(top_artigos,
+          "resultados/etapa-02/top_20_artigos_mais_citados.csv",
+          row.names = FALSE)
+
+
+ggplot(top_artigos,
+       aes(x = reorder(title, citations),
+           y = citations)) +
+  geom_col(fill = "darkred") +
+  coord_flip() +
+  labs(title = "Top 20 Artigos Mais Citados",
+       x = "",
+       y = "Número de Citações") +
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+media_por_ano <- df %>%
+  group_by(year) %>%
+  summarise(media_citacoes = mean(citations, na.rm = TRUE))
+
+media_por_ano
+
+#---------------------
 
 # 3) Média e desvio padrão do score por ano
-estatisticas_score <- df %>%
+# Score temático, aderência a "flood prediction" + "AI/ML"
+estatisticas_score_t <- df %>%
+  group_by(year) %>%
+  summarise(
+    media_score = mean(T_score, na.rm = TRUE),
+    desvio_padrao = sd(T_score, na.rm = TRUE)
+  )
+
+estatisticas_score_t
+
+write.csv(estatisticas_score_t, "resultados/etapa-03/estatisticas_score_tematico.csv", row.names = FALSE)
+
+ggplot(estatisticas_score_t, aes(x = year, y = media_score)) +
+  geom_line(size = 1, color = "pink") +
+  geom_point(size = 2, color = "pink") +
+  labs(title = "Média do Score Temático",
+       x = "Ano",
+       y = "Média do Score") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave(
+  file.path("resultados/etapa-03/estatisticas_score_tematico_grafico.jpg"),
+  width = 12, height = 6
+)
+
+ggplot(estatisticas_score_t, aes(x = year, y = desvio_padrao)) +
+  geom_line(size = 1, color = "black") +
+  geom_point(size = 2, color = "black") +
+  labs(title = "Desvio Padrão do Score Temático por Ano",
+       x = "Ano",
+       y = "Desvio Padrão") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave(
+  file.path("resultados/etapa-03/estatisticas_score_tematico_desvio_padrao_grafico.jpg"),
+  width = 12, height = 6
+)
+
+# Score temático, aderência a "flood prediction" + "AI/ML"
+estatisticas_score_t <- df %>%
+  group_by(year) %>%
+  summarise(
+    media_score = mean(T_score, na.rm = TRUE),
+    desvio_padrao = sd(T_score, na.rm = TRUE)
+  )
+
+estatisticas_score_t
+
+write.csv(estatisticas_score_t, "resultados/etapa-03/estatisticas_score_tematico.csv", row.names = FALSE)
+
+ggplot(estatisticas_score_t, aes(x = year, y = media_score)) +
+  geom_line(size = 1, color = "pink") +
+  geom_point(size = 2, color = "pink") +
+  labs(title = "Média do Score Temático",
+       x = "Ano",
+       y = "Média do Score") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave(
+  file.path("resultados/etapa-03/estatisticas_score_tematico_grafico.jpg"),
+  width = 12, height = 6
+)
+
+ggplot(estatisticas_score_t, aes(x = year, y = desvio_padrao)) +
+  geom_line(size = 1, color = "black") +
+  geom_point(size = 2, color = "black") +
+  labs(title = "Desvio Padrão do Score Temático por Ano",
+       x = "Ano",
+       y = "Desvio Padrão") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave(
+  file.path("resultados/etapa-03/estatisticas_score_tematico_desvio_padrao_grafico.jpg"),
+  width = 12, height = 6
+)
+
+estatisticas_score_final_100 <- df %>%
   group_by(year) %>%
   summarise(
     media_score = mean(score_final_100, na.rm = TRUE),
     desvio_padrao = sd(score_final_100, na.rm = TRUE)
   )
 
-estatisticas_score
+estatisticas_score_final_100
 
-write.csv(estatisticas_score, "resultados/estatisticas_score.csv", row.names = FALSE)
+write.csv(estatisticas_score_final_100, "resultados/etapa-03/estatisticas_score_final_100.csv", row.names = FALSE)
 
-ggplot(estatisticas_score, aes(x = year, y = media_score)) +
+ggplot(estatisticas_score_final_100, aes(x = year, y = media_score)) +
   geom_line(size = 1, color = "blue") +
   geom_point(size = 2, color = "blue") +
   labs(title = "Média do Score Final por Ano",
@@ -315,11 +455,11 @@ ggplot(estatisticas_score, aes(x = year, y = media_score)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ggsave(
-  file.path("resultados/estatisticas_score_media_grafico.jpg"),
+  file.path("resultados/etapa-03/estatisticas_score_media_grafico.jpg"),
   width = 12, height = 6
 )
 
-ggplot(estatisticas_score, aes(x = year, y = desvio_padrao)) +
+ggplot(estatisticas_score_final_100, aes(x = year, y = desvio_padrao)) +
   geom_line(size = 1, color = "purple") +
   geom_point(size = 2, color = "purple") +
   labs(title = "Desvio Padrão do Score por Ano",
@@ -329,7 +469,7 @@ ggplot(estatisticas_score, aes(x = year, y = desvio_padrao)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ggsave(
-  file.path("resultados/estatisticas_score_desvio_padrao_grafico.jpg"),
+  file.path("resultados/etapa-03/estatisticas_score_desvio_padrao_grafico.jpg"),
   width = 12, height = 6
 )
 
@@ -343,7 +483,7 @@ artigos_base <- df %>%
 
 artigos_base
 
-write.csv(artigos_base, "resultados/n_artigos_base.csv", row.names = FALSE)
+write.csv(artigos_base, "resultados/etapa-04/n_artigos_base.csv", row.names = FALSE)
 
 
 ggplot(artigos_base,
@@ -360,7 +500,7 @@ ggplot(artigos_base,
   theme_minimal()
 
 ggsave(
-  file.path("resultados/n_artigos_base_grafico.jpg"),
+  file.path("resultados/etapa-04/n_artigos_base_grafico.jpg"),
   width = 12, height = 6
 )
 
@@ -372,7 +512,7 @@ importancia <- df %>%
 
 importancia
 
-write.csv(importancia, "resultados/importancia.csv", row.names = FALSE)
+write.csv(importancia, "resultados/etapa-04/importancia.csv", row.names = FALSE)
 
 
 
